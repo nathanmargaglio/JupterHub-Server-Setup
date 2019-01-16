@@ -7,6 +7,7 @@ sudo apt install npm nodejs curl net-tools openssh-server nginx python-certbot-n
 # SSH
 echo "PasswordAuthentication yes" | sudo tee -a /etc/ssh/sshd_config
 echo "Port 22" | sudo tee -a /etc/ssh/sshd_config
+sudo ufw allow ssh
 sudo service ssh restart
 
 # Anaconda
@@ -37,8 +38,8 @@ sudo cp godel.margagl.io /etc/nginx/sites-available/godel.margagl.io
 
 # https://www.digitalocean.com/community/tutorials/how-to-set-up-let-s-encrypt-with-nginx-server-blocks-on-ubuntu-16-04
 sudo ufw allow 'Nginx Full'
-sudo ufw delete allow 'Nginx HTTP'
 sudo certbot --nginx -n -d godel.margagl.io
+sudo service nginx restart
 
 # Tensorflow
 # https://www.tensorflow.org/install/gpu
@@ -47,18 +48,24 @@ sudo certbot --nginx -n -d godel.margagl.io
 sudo apt install openjdk-8-jdk build-essential swig python-wheel libcurl3-dev -y
 
 # NVIDIA Drivers
-sudo ubuntu-drivers autoinstall
+#sudo ubuntu-drivers autoinstall
+curl -O http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/cuda-repo-ubuntu1604_9.0.176-1_amd64.deb
+sudo apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/7fa2af80.pub
+sudo dpkg -i ./cuda-repo-ubuntu1604_9.0.176-1_amd64.deb
+sudo apt update
+sudo apt install cuda-9-0 -y
 sudo reboot
 
 # CUDNN
 wget https://s3.amazonaws.com/open-source-william-falcon/cudnn-9.0-linux-x64-v7.3.1.20.tgz
 sudo tar -xzvf cudnn-9.0-linux-x64-v7.3.1.20.tgz
+sudo ln -s /usr/local/cuda-9.0 /usr/local/cuda
 sudo cp cuda/include/cudnn.h /usr/local/cuda/include
 sudo cp cuda/lib64/libcudnn* /usr/local/cuda/lib64
 sudo chmod a+r /usr/local/cuda/include/cudnn.h /usr/local/cuda/lib64/libcudnn*
 
 # CUPTI
-echo export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64" | sudo tree -a /etc/bash.bashrc
-echo export CUDA_HOME=/usr/local/cuda | sudo tree -a /etc/bash.bashrc
-echo export PATH=\"$PATH:/usr/local/cuda/bin\" | sudo tree -a /etc/bash.bashrc
+echo export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64" | sudo tee -a /etc/bash.bashrc
+echo export CUDA_HOME=/usr/local/cuda | sudo tee -a /etc/bash.bashrc
+echo export PATH=\"$PATH:/usr/local/cuda/bin\" | sudo tee -a /etc/bash.bashrc
 source ~/.bashrc
