@@ -1,7 +1,6 @@
-# Update and utils/packages
+# Update and packages
 sudo add-apt-repository ppa:certbot/certbot -y
 sudo apt update && sudo apt upgrade -y
-sudo apt install git vim tmux -y
 sudo apt install npm nodejs curl net-tools openssh-server nginx python-certbot-nginx -y
 
 # SSH
@@ -16,30 +15,6 @@ curl -O https://repo.anaconda.com/archive/Anaconda3-5.2.0-Linux-x86_64.sh
 sudo bash Anaconda3-5.2.0-Linux-x86_64.sh -b -p /opt/anaconda3
 echo "export PATH=\"/opt/anaconda3/bin:$PATH\"" | sudo tree -a /etc/bash.bashrc
 sudo cp /etc/bash.bashrc /etc/bash.bashrc-backup
-
-# Jupyter
-# https://jupyterhub.readthedocs.io/en/stable/quickstart.html
-sudo /opt/anaconda3/bin/python -m pip install jupyterhub notebook
-sudo npm install -g configurable-http-proxy
-
-# https://jupyterhub.readthedocs.io/en/stable/getting-started/config-basics.html
-sudo mkdir /etc/jupyterhub
-sudo cp jupyterhub_config.py /etc/jupyterhub/jupyterhub_config.py
-
-# https://github.com/jupyterhub/jupyterhub/wiki/Run-jupyterhub-as-a-system-service
-sudo cp jupyterhub.service /etc/systemd/system/jupyterhub.service
-sudo systemctl daemon-reload
-sudo systemctl start jupyterhub
-sudo systemctl enable jupyterhub
-
-# Ngnix
-# https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-server-blocks-virtual-hosts-on-ubuntu-16-04
-sudo cp godel.margagl.io /etc/nginx/sites-available/godel.margagl.io
-
-# https://www.digitalocean.com/community/tutorials/how-to-set-up-let-s-encrypt-with-nginx-server-blocks-on-ubuntu-16-04
-sudo ufw allow 'Nginx Full'
-sudo certbot --nginx -n -d godel.margagl.io
-sudo service nginx restart
 
 # Tensorflow
 # https://www.tensorflow.org/install/gpu
@@ -69,3 +44,41 @@ echo export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/cuda/lib64:/usr/local/c
 echo export CUDA_HOME=/usr/local/cuda | sudo tee -a /etc/bash.bashrc
 echo export PATH=\"$PATH:/usr/local/cuda/bin\" | sudo tee -a /etc/bash.bashrc
 source ~/.bashrc
+
+# Jupyter
+# https://jupyterhub.readthedocs.io/en/stable/quickstart.html
+sudo /opt/anaconda3/bin/python -m pip install jupyterhub notebook
+sudo npm install -g configurable-http-proxy
+
+# https://jupyterhub.readthedocs.io/en/stable/getting-started/config-basics.html
+sudo mkdir /etc/jupyterhub
+sudo cp jupyterhub_config.py /etc/jupyterhub/jupyterhub_config.py
+
+# https://github.com/jupyterhub/jupyterhub/wiki/Run-jupyterhub-as-a-system-service
+sudo cp jupyterhub.service /etc/systemd/system/jupyterhub.service
+sudo systemctl daemon-reload
+sudo systemctl start jupyterhub
+sudo systemctl enable jupyterhub
+
+# Ngnix
+# https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-server-blocks-virtual-hosts-on-ubuntu-16-04
+sudo cp godel.margagl.io /etc/nginx/sites-available/godel.margagl.io
+
+# https://www.digitalocean.com/community/tutorials/how-to-set-up-let-s-encrypt-with-nginx-server-blocks-on-ubuntu-16-04
+sudo ufw allow 'Nginx Full'
+sudo certbot --nginx -n -d godel.margagl.io
+sudo service nginx restart
+
+# Utilities
+sudo apt install git vim tmux -y
+
+# vim Plugin
+git clone --depth=1 https://github.com/amix/vimrc.git ~/.vim_runtime
+sh ~/.vim_runtime/install_awesome_vimrc.sh
+
+# tmux Plugin
+echo export EDITOR=vim | sudo tree -a /etc/bash.bashrc
+echo export TERM=xterm-256color | sudo tree -a /etc/bash.bashrc
+git clone https://github.com/gpakosz/.tmux.git
+ln -s -f .tmux/.tmux.conf
+cp .tmux/.tmux.conf.local .
