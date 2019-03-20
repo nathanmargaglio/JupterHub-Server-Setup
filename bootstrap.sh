@@ -82,3 +82,7 @@ echo export TERM=xterm-256color | sudo tree -a /etc/bash.bashrc
 git clone https://github.com/gpakosz/.tmux.git
 ln -s -f .tmux/.tmux.conf
 cp .tmux/.tmux.conf.local .
+
+# Postgres
+sudo apt install postgresql postgresql-contrib -y
+sudo -u postgres createdb curls
